@@ -10,12 +10,12 @@
     </style>
   </head>
   <body>
-    <h2>Quét mã QR để điểm danh</h2>
+    <h2>Đang quét mã QR...</h2>
     <div id="reader"></div>
     <div id="result"></div>
 
     <script>
-      const webAppUrl = "https://script.google.com/macros/s/AKfycbwIeTYaedysqvYffejRrAymrr-5XiqyEJkDT5yU1a1EfetL5HwQwMGv4_J6eoCdvlgE8w/exec"; // <- Thay bằng URL Web App đã triển khai từ Apps Script
+      const webAppUrl = "PASTE_YOUR_WEBAPP_URL_HERE"; // Dán URL Web App Apps Script
 
       function postData(maHV) {
         fetch(webAppUrl, {
@@ -38,10 +38,12 @@
         postData(decodedText);
       }
 
-      const html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader", { fps: 10, qrbox: 250 }
-      );
-      html5QrcodeScanner.render(onScanSuccess);
+      window.onload = function () {
+        const html5QrcodeScanner = new Html5QrcodeScanner(
+          "reader", { fps: 10, qrbox: 250 }
+        );
+        html5QrcodeScanner.render(onScanSuccess);
+      }
     </script>
   </body>
 </html>
