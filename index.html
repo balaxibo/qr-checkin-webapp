@@ -1,49 +1,66 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Điểm danh bằng QR</title>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <style>
-      body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-      #reader { width: 300px; margin: auto; }
-      #result { margin-top: 20px; font-size: 18px; font-weight: bold; color: green; }
-    </style>
-  </head>
-  <body>
-    <h2>Đang quét mã QR...</h2>
-    <div id="reader"></div>
-    <div id="result"></div>
+<head>
+  <title>Điểm danh bằng QR</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    #reader {
+      width: 300px;
+      margin: auto;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h2>Đang quét mã QR...</h2>
+  <div id="reader"></div>
+  <div id="result"></div>
 
-    <script>
-      const webAppUrl = "PASTE_YOUR_WEBAPP_URL_HERE"; // Dán URL Web App Apps Script
+  <script>
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbwIeTYaedysqvYffejRrAymrr-5XiqyEJkDT5yU1a1EfetL5HwQwMGv4_J6eoCdvlgE8w/exec"; // ⚠️ Dán URL Web App Apps Script tại đây
 
-      function postData(maHV) {
-        fetch(webAppUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ maHV: maHV })
-        })
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById("result").textContent = data;
-        })
-        .catch(err => {
-          document.getElementById("result").textContent = "Lỗi gửi dữ liệu.";
-        });
-      }
+    function postData(maHV) {
+      fetch(webAppUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ maHV: maHV })
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("result").textContent = data;
+      })
+      .catch(err => {
+        document.getElementById("result").textContent = "❌ Không gửi được dữ liệu.";
+      });
+    }
 
-      function onScanSuccess(decodedText, decodedResult) {
-        html5QrcodeScanner.clear();
-        document.getElementById("result").textContent = "Đang gửi dữ liệu...";
-        postData(decodedText);
-      }
+    function onScanSuccess(decodedText, decodedResult) {
+      qrScanner.clear();
+      document.getElementById("result").textContent = "📤 Đang gửi dữ liệu...";
+      postData(decodedText);
+    }
 
-      window.onload = function () {
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-          "reader", { fps: 10, qrbox: 250 }
-        );
-        html5QrcodeScanner.render(onScanSuccess);
-      }
-    </script>
-  </body>
+    let qrScanner;
+    window.onload = function () {
+      qrScanner = new Html5Qrcode("reader");
+      qrScanner.start(
+        { facingMode: "environment" }, // Sử dụng camera sau
+        { fps: 10, qrbox: 250 },
+        onScanSuccess
+      ).catch(err => {
+        document.getElementById("result").textContent = "⚠️ Không thể mở camera: " + err;
+      });
+    };
+  </script>
+</body>
 </html>
