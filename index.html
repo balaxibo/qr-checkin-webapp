@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Điểm danh bằng QR</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+      body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+      #reader { width: 300px; margin: auto; }
+      #result { margin-top: 20px; font-size: 18px; font-weight: bold; color: green; }
+    </style>
+  </head>
+  <body>
+    <h2>Quét mã QR để điểm danh</h2>
+    <div id="reader"></div>
+    <div id="result"></div>
+
+    <script>
+      const webAppUrl = "https://script.google.com/macros/s/AKfycbwIeTYaedysqvYffejRrAymrr-5XiqyEJkDT5yU1a1EfetL5HwQwMGv4_J6eoCdvlgE8w/exec"; // <- Thay bằng URL Web App đã triển khai từ Apps Script
+
+      function postData(maHV) {
+        fetch(webAppUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ maHV: maHV })
+        })
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById("result").textContent = data;
+        })
+        .catch(err => {
+          document.getElementById("result").textContent = "Lỗi gửi dữ liệu.";
+        });
+      }
+
+      function onScanSuccess(decodedText, decodedResult) {
+        html5QrcodeScanner.clear();
+        document.getElementById("result").textContent = "Đang gửi dữ liệu...";
+        postData(decodedText);
+      }
+
+      const html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader", { fps: 10, qrbox: 250 }
+      );
+      html5QrcodeScanner.render(onScanSuccess);
+    </script>
+  </body>
+</html>
